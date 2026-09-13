@@ -19,6 +19,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: api
     restart: unless-stopped
     environment:
       DB_HOST: db
@@ -36,6 +37,22 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    restart: unless-stopped
+    environment:
+      NASA_API_URL: http://api:8000
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./app/src:/var/www/html
+    depends_on:
+      api:
+        condition: service_healthy
 
   phpmyadmin:
     image: phpmyadmin:5-apache
