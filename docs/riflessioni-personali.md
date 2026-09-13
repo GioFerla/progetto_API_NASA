@@ -1,18 +1,15 @@
 # Riflessioni sulle scelte progettuali e sulle evoluzioni future
 
-> Bozza da rivedere e personalizzare a cura dell'autore prima della consegna. Le considerazioni si basano sul codice presente; non descrivono esperienze personali o prove svolte dall'autore.
-
 ## Scelte progettuali
 
 Ritengo utile mantenere una copia locale degli eventi perché permette di separare la consultazione dalla disponibilità momentanea della sorgente NASA. Questo richiede però di gestire l'aggiornamento e di comunicare la freschezza dei dati: un servizio disponibile può comunque mostrare informazioni non aggiornate.
 
-Considero coerente l'uso di un database relazionale per rappresentare eventi, categorie, fonti e rilevazioni. Le tabelle associative evitano di duplicare categorie e fonti per ogni evento. La scelta di conservare le coordinate in JSON facilita la gestione di forme diverse, ma rende meno immediata l'introduzione di ricerche geografiche avanzate.
+Considero appropriato l’uso di un database relazionale per rappresentare eventi, categorie, fonti e rilevazioni, così da ridurre il numero di richieste effettuate direttamente alla sorgente NASA. L’utilizzo di tabelle associative permette inoltre di evitare la duplicazione di categorie e fonti per ogni evento. La scelta di memorizzare le coordinate in formato JSON rende più semplice la gestione di geometrie differenti, anche se può rendere più complessa l’implementazione di ricerche geografiche avanzate.
+
 
 La separazione tra endpoint e query rende il progetto leggibile senza introdurre molti livelli. Per le dimensioni attuali considero questa semplicità un vantaggio; con più funzionalità valuterei una separazione ulteriore tra acquisizione, accesso ai dati e regole applicative.
 
 La transazione unica protegge dalla presenza di aggiornamenti parziali. La sostituzione delle relazioni e delle geometrie semplifica la sincronizzazione, ma rinuncia alla conservazione delle versioni precedenti e può comportare molte scritture. Considero questo un compromesso accettabile per un prototipo, da rivalutare se il volume dei dati aumenta.
-
-Docker Compose rende riproducibile la configurazione dei servizi. La dashboard PHP con JavaScript permette di consultare i dati in modo diretto, ma caricare tutto nel browser limita la scalabilità. Inoltre, l'uso della prima categoria semplifica i grafici a costo di perdere parte dell'informazione disponibile.
 
 ## Evoluzioni future
 
@@ -22,6 +19,8 @@ Successivamente sposterei filtri e aggregazioni verso l'API, riducendo il trasfe
 
 Per rendere più affidabile la manutenzione aggiungerei migrazioni versionate e test automatici su rollback, aggiornamenti ripetuti e geometrie non valide. Uno storico delle revisioni consentirebbe di studiare l'evoluzione degli eventi nel tempo. Funzioni come preferiti o notifiche richiederebbero invece account, autenticazione e autorizzazione.
 
-## Aspetti da personalizzare
+## Difficoltà incontrate
 
-Prima della consegna aggiungere un esempio concreto di difficoltà incontrata, spiegare quale alternativa è stata realmente valutata e indicare quale evoluzione si vorrebbe implementare per prima e perché. Questi elementi devono riflettere l'esperienza effettiva dell'autore.
+La difficoltà maggiore è stata creare un sistema di caching, perché non avevo mai studiato questo argomento in precedenza. Ho dovuto quindi comprendere come conservare localmente i dati provenienti dall'API NASA e come aggiornarli senza mostrare informazioni incoerenti o troppo vecchie.
+
+Un altro punto di rallentamento rilevante è stata l'implementazione della mappa. La visualizzazione dei punti ha richiesto attenzione nella gestione delle coordinate, ma la parte più complessa è stata rappresentare correttamente le aree associate agli eventi e adattarle alla struttura dei dati ricevuti.
